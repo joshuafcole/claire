@@ -20,5 +20,10 @@
   "author": "Joshua M. Cole",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "gitHead": "5854c5b752f936502b96339eb7d4024ba0907c32"
+  "gitHead": "5854c5b752f936502b96339eb7d4024ba0907c32",
+  "dependencies": {
+    "fuzzy": "~0.1.0",
+    "walk": "~2.2.1",
+    "goog": "~0.2.1"
+  }
 }
