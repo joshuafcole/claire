@@ -6,3 +6,5 @@ out/
 target/
 .nrepl-port
 build/
+lib/
+repl/
