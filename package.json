@@ -1,0 +1,24 @@
+{
+  "name": "claire",
+  "version": "0.0.0",
+  "description": "A LightTable native Emacs Inspired Fuzzy File Finder.",
+  "main": "claire.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/joshuafcole/claire"
+  },
+  "keywords": [
+    "light",
+    "table",
+    "fuzzy",
+    "file",
+    "finder"
+  ],
+  "author": "Joshua M. Cole",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "5854c5b752f936502b96339eb7d4024ba0907c32"
+}

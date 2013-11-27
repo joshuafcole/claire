@@ -1,0 +1,3 @@
+{:+ {:app [(:lt.objs.plugins/load-js "claire.js" true)
+           (:lt.objs.plugins/load-keymap "claire.keymap")]
+}}
