@@ -34,47 +34,21 @@
 
   var key = {tab: 9, backspace: 8, left: 37, up: 38, right: 39, down: 40};
   function processKeys(event) {
-    var val = claire.$search.val();
+
 
     if(event && event.keyCode === key.tab) {
       event.preventDefault();
-
-      var shared = '';
-      for(var i = 0; i < claire.matches.length; i++) {
-        var match = claire.matches[i];
-        if(match.shared.length < shared.length || !shared) {
-          shared = match.shared;
-        }
-      }
-      console.log('shared:', shared);
-
-      // 0. Fix files reported in grandparent dir.
-      // 1. Calculate longest prefix and append to $search
-      // 2. Iterate through all entries.
-
-      return;
+      claire.complete();
     }
 
     if(event && event.keyCode === key.backspace) {
-      console.log('delete');
-      if(val[val.length - 1] === '/') {
-        // Get slash before this one, if it exists.
-        var slash = val.lastIndexOf('/', val.length - 2);
-        if(slash !== -1) {
-          val = val.slice(0, slash + 2); //include slash
-        } else {
-          val = '/'; //@TODO: Make platform generic
-        }
-
-        claire.$search.val(val);
-        console.log(val);
-      }
+      claire.smartDelete();
     }
 
   }
 
   var search = function(event) {
-    var skipKeys = [key.left, key.up, key.right, key.down, key.tab];
+    var skipKeys = [key.left, key.up, key.right, key.down];
     if(event && _.contains(skipKeys, event.keyCode)) {
       return;
     }
@@ -110,6 +84,56 @@
     }
   };
   util.addAction('claire.show', claire.show);
+
+  claire.smartDelete = function() {
+    var val = claire.$search.val();
+    if(val[val.length - 1] === '/') {
+      // Get slash before this one, if it exists.
+      var slash = val.lastIndexOf('/', val.length - 2);
+      if(slash !== -1) {
+        val = val.slice(0, slash + 2); //include slash
+      } else {
+        val = '/'; //@TODO: Make platform generic
+      }
+
+      claire.$search.val(val);
+      console.log(val);
+    }
+  };
+  util.addAction('claire.smart-delete', claire.smartDelete);
+
+  claire.complete = function() {
+    // 1. Calculate longest shared prefix or results and append to $search
+    var val = claire.$search.val();
+    var items = _.map(claire.matches, function(match) {
+      return path.join(match.shared, match.dir, match.file);
+    });
+
+    if(!items.length) {
+      return;
+    }
+
+    items = items.sort();
+    var first = items[0];
+    var last = items[items.length - 1];
+    var i = 0;
+    while(i < first.length && first.charAt(i) == last.charAt(i)) {
+      i++;
+    }
+    var shared = first.substring(0, i);
+
+    if(shared.length > val.length) {
+      if(shared.indexOf(val) !== -1) {
+        claire.$search.val(shared);
+      }
+      return;
+    }
+
+    // 2. Iterate through all entries.
+    console.log('iterate');
+    return;
+  };
+  util.addAction('claire.complete', claire.complete);
 
   if(!window.claire) {
     claire.init();
