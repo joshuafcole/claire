@@ -1,1 +1,6 @@
+{:+ {:app {"ctrl-x ctrl-f" [(:editor.codemirror.command "claire.show")]
+           "ctrl-x ctrl-p" [(:editor.codemirror.command "claire.search")]}
 
+     :claire {"ctrl-g" [(:editor.codemirror.command "claire.show")]}
+     }
+}

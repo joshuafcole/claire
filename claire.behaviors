@@ -1,3 +1,4 @@
-{:+ {:app [;(:lt.objs.plugins/load-js "build/claire.js" true) ; borked
+{:+ {:app [(:lt.objs.plugins/load-js "claire.js" true)
+           ((:lt.objs.plugins/load-css "css/structure.css"))
            (:lt.objs.plugins/load-keymap "claire.keymap")]
 }}

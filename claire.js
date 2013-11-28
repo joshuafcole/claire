@@ -1,33 +1,74 @@
-(function claire(lt) {
-  var fs = require('fs');
+(function claireBootstrap(window) {
   var path = require('path');
 
-  var root = path.join(lt.util.load.pwd, 'plugins', 'claire');
-  var modules = path.join(root, '/node_modules');
+  var util = require(path.join(lt.util.load.pwd, 'plugins', 'claire', 'lib', 'util'))(window);
+  var requireLocal = util.requireLocal;
 
-  function requireLocal(name) {
-    var module;
-    try {
-      module = require(path.join(root, name));
-    } catch (e) {
-      if(e.code !== 'MODULE_NOT_FOUND') {
-        throw e;
-      }
-    }
+  var $ = requireLocal('jquery');
+  var claireFiles = requireLocal('claire-file');
+  var claire = window.claire || {};
 
-    if(!module) {
-      module = require(path.join(modules, name));
-    }
-    return module;
+  /*\
+  |*| Claire helpers
+  \*/
+  claire.init = function() {
+    claire.$claire = $('<div id="claire"><div class="selector">');
+    var $filterList = $('<div class="filter-list">').appendTo(claire.$claire.children('.selector'));
+    claire.$search = $('File: <input class="search" type="text" placeholder="File..." tabindex=0 />').appendTo($filterList);
+    claire.$results = $('<ul>').appendTo($filterList);
+
+    $('#claire').remove();
+    util.addItem('#bottombar', claire.$claire);
+  };
+
+  function setResults(err, matches) {
+    claire.$results.html('');
+
+    matches = _.sortBy(matches, function(match) {
+      return -match.score;
+    });
+
+    matches.map(function(match) {
+      var file = match.file;
+
+      var $result = $('<li>fileStats.name').attr('title', file).html(match.rendered);
+      claire.$results.append($result);
+    });
   }
 
+  var search = _.throttle(function() {
+    var val = claire.$search.val();
+    claireFiles.find(val, '/Users', setResults, {pre: '<em>', post: '</em>', short: true});
+  }, 100, {trailing: true});
 
-  var fuzzy = requireLocal('fuzzy');
-  var walk = requireLocal('walk');
+  /*\
+  |*| Claire commands
+  \*/
 
-  var cludge = goog.require('./build/claire.main.getlink');
-  console.log('CLUDGE', cludge);
+  claire.clear = function() {
+    claire.$search.val('');
+    claire.$results.html('');
+  }
+  util.addAction('claire.clear', claire.clear);
 
-  //console.log(fuzzy, walk);
-  //console.log(lt.objs.bottombar);
-})(window.lt);
+  claire.show = function() {
+    var opened = util.showContainer('#bottombar');
+    if(opened) {
+      claire.$search.on('keydown', search);
+      var startPath = util.getBufferDirectory();
+      claire.$search.val(startPath);
+      claire.$search.focus();
+      search();
+
+    } else {
+      claire.$search.off('keydown', search);
+      claire.clear();
+    }
+  };
+  util.addAction('claire.show', claire.show);
+
+  if(!window.claire) {
+    claire.init();
+    window.claire = claire;
+  }
+})(this);
