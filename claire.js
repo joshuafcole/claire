@@ -23,28 +23,43 @@
   };
 
   function setResults(err, matches) {
+    var selected = claire.$results.find('li.selected').attr('title');
     claire.$results.html('');
     claire.matches = matches;
-    matches.map(function(match) {
+    matches.map(function(match, i) {
       var file = match.dir + match.file;
-      var $result = $('<li>fileStats.name').attr('title', file).html(match.rendered);
+      var $result = $('<li>fileStats.name')
+        .attr('title', file)
+        .attr('tabIndex', i)
+        .html(match.rendered);
+
+      if(file === selected) {
+        $result.addClass('selected');
+      }
+
       claire.$results.append($result);
     });
   }
 
   var key = {tab: 9, backspace: 8, left: 37, up: 38, right: 39, down: 40};
   function processKeys(event) {
-
-
-    if(event && event.keyCode === key.tab) {
+    if(event.keyCode === key.tab) {
       event.preventDefault();
       claire.complete();
     }
 
-    if(event && event.keyCode === key.backspace) {
+    if(event.keyCode === key.backspace) {
       claire.smartDelete();
     }
 
+    if(event.keyCode === key.up) {
+      event.preventDefault();
+      claire.iterate('reverse');
+    }
+    if(event.keyCode === key.down) {
+      event.preventDefault();
+      claire.iterate();
+    }
   }
 
   var search = function(event) {
@@ -97,20 +112,46 @@
       }
 
       claire.$search.val(val);
-      console.log(val);
     }
   };
   util.addAction('claire.smart-delete', claire.smartDelete);
 
+  claire.iterate = function(mode) {
+    var $selected = claire.$results.find('li.selected');
+
+    if(mode === 'reverse') {
+      if(!$selected.length) {
+        claire.$results.find('li').last().addClass('selected');
+        return;
+      }
+
+      $selected = $selected.removeClass('selected')
+        .prev().addClass('selected');
+    } else {
+      if(!$selected.length) {
+        claire.$results.find('li').first().addClass('selected');
+        return;
+      }
+
+      $selected = $selected.removeClass('selected')
+        .next().addClass('selected');
+    }
+
+  };
+  util.addAction('claire.iterate', claire.iterate);
+
+  // Calculate longest shared prefix or results and append to $search
   claire.complete = function() {
-    // 1. Calculate longest shared prefix or results and append to $search
-    var val = claire.$search.val();
+    var val = claireFiles.expandPath(claire.$search.val());
     var items = _.map(claire.matches, function(match) {
       return path.join(match.shared, match.dir, match.file);
     });
 
     if(!items.length) {
       return;
+    }
+    if(items.length === 1) {
+      claire.$search.val(items[0]);
     }
 
     items = items.sort();
@@ -121,6 +162,7 @@
       i++;
     }
     var shared = first.substring(0, i);
+    console.log(first, last, shared);
 
     if(shared.length > val.length) {
       if(shared.indexOf(val) !== -1) {
@@ -129,9 +171,7 @@
       return;
     }
 
-    // 2. Iterate through all entries.
-    console.log('iterate');
-    return;
+    claire.iterate();
   };
   util.addAction('claire.complete', claire.complete);
 
