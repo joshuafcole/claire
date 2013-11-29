@@ -15,3 +15,7 @@
   margin: 2px 4px;
   padding: 2px 4px;
 }
+
+#claire ul > li.selected {
+  background: rgba(32, 160, 192, 128);
+}
