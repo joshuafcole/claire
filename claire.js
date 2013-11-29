@@ -162,7 +162,6 @@
       i++;
     }
     var shared = first.substring(0, i);
-    console.log(first, last, shared);
 
     if(shared.length > val.length) {
       if(shared.indexOf(val) !== -1) {
