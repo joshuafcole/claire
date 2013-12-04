@@ -40,9 +40,10 @@
     claire.$results.html('');
     claire.matches = matches;
     matches.map(function(match, i) {
-      var file = match.dir + match.file;
+      var file = match.shared + match.dir + match.file;
       var $result = $('<li>fileStats.name')
         .attr('title', file)
+        .attr('data-relative', match.dir + match.file)
         .attr('tabIndex', i)
         .html(match.rendered);
 
@@ -54,48 +55,10 @@
     });
   }
 
-  var key = {backspace: 8, tab: 9, enter: 13, left: 37, up: 38, right: 39, down: 40};
-  /*\
-  |*| Attaches ido-like behaviors to various special keys while in claire.
-  |*| @TODO: Move into keymap once contexts are working.
-  \*/
-  function processKeys(event) {
-    switch (event.keyCode) {
-      case (key.backspace):
-        claire.smartDelete();
-        break;
-
-      case (key.tab):
-        event.preventDefault();
-        claire.smartComplete();
-        break;
-
-      case  (key.enter):
-        claire.openMatch();
-        claire.show();
-        break;
-
-      case (key.up):
-        event.preventDefault();
-        claire.iterate('reverse');
-        break;
-
-      case (key.down):
-        event.preventDefault();
-        claire.iterate();
-        break;
-    }
-  }
-
   /*\
   |*| Dispatches search term to claire-files live as it is typed.
   \*/
   function search(event) {
-    var skipKeys = [key.left, key.up, key.right, key.down];
-    if(event && _.contains(skipKeys, event.keyCode)) {
-      return;
-    }
-
     var val = claire.$search.val();
     claireFiles.find(val, setResults, {pre: '<em>', post: '</em>', short: true});
   };
@@ -140,7 +103,6 @@
     var opened = util.showContainer('#bottombar');
     if(opened) {
       util.enterContext('claire');
-      claire.$search.on('keydown', processKeys);
       claire.$search.on('keyup', search);
       claire.searchRoot = util.getBufferDirectory();
       claire.$search.val(claire.searchRoot);
@@ -149,7 +111,6 @@
 
     } else {
       util.exitContext('claire');
-      claire.$search.off('keydown', processKeys);
       claire.$search.off('keyup', search);
       claire.clear();
     }
@@ -165,13 +126,19 @@
       // Get separator before this one, if it exists.
       var sep = val.lastIndexOf(path.sep, val.length - 2);
       if(sep !== -1) {
-        val = val.slice(0, sep + 2); // Include the separator.
+        val = val.slice(0, sep + 1); // Include the separator.
       } else {
         val = path.sep;
       }
 
-      claire.$search.val(val);
+
+    } else {
+      // Truncate last char normally.
+      val = val.slice(0, val.length - 1);
     }
+
+    claire.$search.val(val);
+    search();
   };
   util.addAction('claire.smart-delete', claire.smartDelete);
 
@@ -181,27 +148,33 @@
   |*| (use a hidden sentinel value?)
   |*| @TODO: Clean up.
   \*/
-  claire.iterate = function(mode) {
-    var $selected = claire.$results.find('li.selected');
-
+  claire.iterate = function(cm, mode) {
+    var initial = 'first';
+    var iter = 'next';
     if(mode === 'reverse') {
-      if(!$selected.length) {
-        claire.$results.find('li').last().addClass('selected');
-        return;
-      }
-
-      $selected = $selected.removeClass('selected')
-        .prev().addClass('selected');
-    } else {
-      if(!$selected.length) {
-        claire.$results.find('li').first().addClass('selected');
-        return;
-      }
-
-      $selected = $selected.removeClass('selected')
-        .next().addClass('selected');
+      inital = 'last';
+      iter = 'prev';
     }
 
+    // Find and highlight newly selected item.
+    var $selected = claire.$results.find('li.selected');
+    if(!$selected.length) {
+      claire.$results.find('li')[initial]().addClass('selected');
+    } else {
+      $selected = $selected.removeClass('selected')[iter]().addClass('selected');
+    }
+
+    // Populate search bar with current selection.
+    var val = claire.$search.val();
+    if(claire.selected) {
+      val = val.slice(0, val.length - claire.selected.length);
+    }
+    claire.selected = $selected.attr('data-relative') || '';
+    // If selection is a directory, don't include the last slash -- typing it finalizes the selection.
+    if(claire.selected[claire.selected.length - 1] === path.sep) {
+      claire.selected = claire.selected.slice(0, claire.selected.length - 1);
+    }
+    claire.$search.val(val + claire.selected);
   };
   util.addAction('claire.iterate', claire.iterate);
 
@@ -226,8 +199,9 @@
     if(shared.length > val.length) {
       if(shared.indexOf(val) !== -1) {
         claire.$search.val(shared);
+        search();
+        return true;
       }
-      return true;
     }
     return false;
   };
