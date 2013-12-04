@@ -51,28 +51,36 @@
     });
   }
 
-  var key = {tab: 9, backspace: 8, left: 37, up: 38, right: 39, down: 40};
+  var key = {backspace: 8, tab: 9, enter: 13, left: 37, up: 38, right: 39, down: 40};
   /*\
   |*| Attaches ido-like behaviors to various special keys while in claire.
   |*| @TODO: Move into keymap once contexts are working.
   \*/
   function processKeys(event) {
-    if(event.keyCode === key.tab) {
-      event.preventDefault();
-      claire.smartComplete();
-    }
+    switch (event.keyCode) {
+      case (key.backspace):
+        claire.smartDelete();
+        break;
 
-    if(event.keyCode === key.backspace) {
-      claire.smartDelete();
-    }
+      case (key.tab):
+        event.preventDefault();
+        claire.smartComplete();
+        break;
 
-    if(event.keyCode === key.up) {
-      event.preventDefault();
-      claire.iterate('reverse');
-    }
-    if(event.keyCode === key.down) {
-      event.preventDefault();
-      claire.iterate();
+      case  (key.enter):
+        claire.openMatch();
+        claire.show();
+        break;
+
+      case (key.up):
+        event.preventDefault();
+        claire.iterate('reverse');
+        break;
+
+      case (key.down):
+        event.preventDefault();
+        claire.iterate();
+        break;
     }
   }
 
@@ -89,6 +97,26 @@
     claireFiles.find(val, setResults, {pre: '<em>', post: '</em>', short: true});
   };
 
+  /*\
+  |*| Gets the shared prefix of an array of strings.
+  |*| Neat trick -- Compare the first and last elements of a sorted array.
+  |*| Their shared prefix is guaranteed to be a prefix of all elements of the array.
+  \*/
+  function getSharedPrefix(items) {
+    if(!items.length) {
+      return '';
+    }
+
+    items = items.sort();
+    var first = items[0];
+    var last = items[items.length - 1];
+    var i = 0;
+    while(i < first.length && first.charAt(i) == last.charAt(i)) {
+      i++;
+    }
+    return first.substring(0, i);
+  }
+
 
   /*************************************************************************\
    * Claire commands
@@ -104,6 +132,7 @@
 
   /*\
   |*| Displays claire and initalizes it's context.
+  |*| @TODO: Re-enable context when it's working.
   \*/
   claire.show = function() {
     var opened = util.showContainer('#bottombar');
@@ -130,13 +159,13 @@
   \*/
   claire.smartDelete = function() {
     var val = claire.$search.val();
-    if(val[val.length - 1] === '/') {
-      // Get slash before this one, if it exists.
-      var slash = val.lastIndexOf('/', val.length - 2);
-      if(slash !== -1) {
-        val = val.slice(0, slash + 2); //include slash
+    if(val[val.length - 1] === path.sep) {
+      // Get separator before this one, if it exists.
+      var sep = val.lastIndexOf(path.sep, val.length - 2);
+      if(sep !== -1) {
+        val = val.slice(0, sep + 2); // Include the separator.
       } else {
-        val = '/'; //@TODO: Make platform generic
+        val = path.sep;
       }
 
       claire.$search.val(val);
@@ -146,6 +175,9 @@
 
   /*\
   |*| Iterates through search results.
+  |*| @TODO: Add current selection to search term without prematurely narrowing search.
+  |*| (use a hidden sentinel value?)
+  |*| @TODO: Clean up.
   \*/
   claire.iterate = function(mode) {
     var $selected = claire.$results.find('li.selected');
@@ -188,18 +220,7 @@
       claire.$search.val(items[0]);
     }
 
-    // Awesome completion trick -- compare the first and last elements of a sorted array.
-    // Their shared prefix is guaranteed to be a prefix of all elements of the array.
-    // @TODO: replace with getUnion from claire-files.
-    items = items.sort();
-    var first = items[0];
-    var last = items[items.length - 1];
-    var i = 0;
-    while(i < first.length && first.charAt(i) == last.charAt(i)) {
-      i++;
-    }
-    var shared = first.substring(0, i);
-
+    var shared = getSharedPrefix(items);
     if(shared.length > val.length) {
       if(shared.indexOf(val) !== -1) {
         claire.$search.val(shared);
@@ -226,9 +247,8 @@
   |*| @TODO: Should create it if it does not exist.
   \*/
   claire.openMatch = function() {
-    var filepath = claire.$value.val();
+    var filepath = claire.$search.val();
     util.open(filepath);
-    claire.clear();
   };
   util.addAction('claire.open-match', claire.openMatch);
 
