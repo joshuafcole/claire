@@ -24,6 +24,9 @@
     util.addItem('#bottombar', claire.$claire);
   };
 
+  /*\
+  |*| Inserts matching results into claire's filter-list.
+  \*/
   function setResults(err, matches) {
     if(err) {
       claire.$results.text(err);
@@ -49,10 +52,14 @@
   }
 
   var key = {tab: 9, backspace: 8, left: 37, up: 38, right: 39, down: 40};
+  /*\
+  |*| Attaches ido-like behaviors to various special keys while in claire.
+  |*| @TODO: Move into keymap once contexts are working.
+  \*/
   function processKeys(event) {
     if(event.keyCode === key.tab) {
       event.preventDefault();
-      claire.complete();
+      claire.smartComplete();
     }
 
     if(event.keyCode === key.backspace) {
@@ -69,7 +76,10 @@
     }
   }
 
-  var search = function(event) {
+  /*\
+  |*| Dispatches search term to claire-files live as it is typed.
+  \*/
+  function search(event) {
     var skipKeys = [key.left, key.up, key.right, key.down];
     if(event && _.contains(skipKeys, event.keyCode)) {
       return;
@@ -222,6 +232,7 @@
   };
   util.addAction('claire.open-match', claire.openMatch);
 
+  // Initializes claire only if it hasn't already been initialized.
   if(!window.claire) {
     claire.init();
     window.claire = claire;
