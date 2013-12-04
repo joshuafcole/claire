@@ -14,6 +14,9 @@
   /*************************************************************************\
    * Claire helpers
   \*************************************************************************/
+  /*\
+  |*| Creates the HTML template for claire and inserts it into Light Table.
+  \*/
   claire.init = function() {
     claire.$claire = $('<div id="claire"><div class="selector">');
     var $filterList = $('<div class="filter-list">').appendTo(claire.$claire.children('.selector'));
