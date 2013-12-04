@@ -8,7 +8,7 @@
 
   var _ = requireLocal('underscore');
   var $ = requireLocal('jquery');
-  var claireFiles = requireLocal('claire-file');
+  var claireFiles = requireLocal('claire-files');
   var claire = window.claire || {};
 
   /*************************************************************************\
@@ -25,7 +25,11 @@
   };
 
   function setResults(err, matches) {
-    // @FIXME: Handle theoretical error condition.
+    if(err) {
+      claire.$results.text(err);
+      return;
+    }
+
     var selected = claire.$results.find('li.selected').attr('title');
     claire.$results.html('');
     claire.matches = matches;
@@ -94,7 +98,7 @@
   claire.show = function() {
     var opened = util.showContainer('#bottombar');
     if(opened) {
-      util.enterContext('claire');
+      // util.enterContext('claire');
       claire.$search.on('keydown', processKeys);
       claire.$search.on('keyup', search);
       claire.searchRoot = util.getBufferDirectory();
@@ -103,7 +107,7 @@
       search();
 
     } else {
-      util.exitContext('claire');
+      // util.exitContext('claire');
       claire.$search.off('keydown', processKeys);
       claire.$search.off('keyup', search);
       claire.clear();
