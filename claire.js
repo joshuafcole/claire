@@ -135,12 +135,11 @@
 
   /*\
   |*| Displays claire and initalizes it's context.
-  |*| @TODO: Re-enable context when it's working.
   \*/
   claire.show = function() {
     var opened = util.showContainer('#bottombar');
     if(opened) {
-      // util.enterContext('claire');
+      util.enterContext('claire');
       claire.$search.on('keydown', processKeys);
       claire.$search.on('keyup', search);
       claire.searchRoot = util.getBufferDirectory();
@@ -149,7 +148,7 @@
       search();
 
     } else {
-      // util.exitContext('claire');
+      util.exitContext('claire');
       claire.$search.off('keydown', processKeys);
       claire.$search.off('keyup', search);
       claire.clear();
