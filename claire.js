@@ -150,22 +150,19 @@
 
   /*\
   |*| Iterates through search results.
-  |*| @TODO: Add current selection to search term without prematurely narrowing search.
-  |*| (use a hidden sentinel value?)
-  |*| @TODO: Clean up.
   \*/
   claire.iterate = function(cm, mode) {
     var initial = 'first';
     var iter = 'next';
     if(mode === 'reverse') {
-      inital = 'last';
+      initial = 'last';
       iter = 'prev';
     }
 
     // Find and highlight newly selected item.
     var $selected = claire.$results.find('li.selected');
     if(!$selected.length) {
-      claire.$results.find('li')[initial]().addClass('selected');
+      $selected = claire.$results.find('li')[initial]().addClass('selected');
     } else {
       $selected = $selected.removeClass('selected')[iter]().addClass('selected');
     }
