@@ -40,14 +40,20 @@
     claire.$results.html('');
     claire.matches = matches;
     matches.map(function(match, i) {
-      var file = match.shared + match.dir + match.file;
+      var relative = match.dir + match.file;
+      var absolute = match.shared + relative;
+
+      if(!relative) {
+        return;
+      }
+
       var $result = $('<li>fileStats.name')
-        .attr('title', file)
-        .attr('data-relative', match.dir + match.file)
+        .attr('title', absolute)
+        .attr('data-relative', relative)
         .attr('tabIndex', i)
         .html(match.rendered);
 
-      if(file === selected) {
+      if(absolute === selected) {
         $result.addClass('selected');
       }
 
