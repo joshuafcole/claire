@@ -1,6 +1,6 @@
 {
   "name": "claire",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Light Table native emacs' ido-mode inspired fuzzy file finder.",
   "main": "claire.js",
   "scripts": {
