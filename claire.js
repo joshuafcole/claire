@@ -172,7 +172,7 @@
     if(claire.selected) {
       val = val.slice(0, val.length - claire.selected.length);
     }
-    claire.selected = $selected.attr('data-relative') || '';
+    claire.selected = $selected.text() || '';
     // If selection is a directory, don't include the last slash -- typing it finalizes the selection.
     if(claire.selected[claire.selected.length - 1] === path.sep) {
       claire.selected = claire.selected.slice(0, claire.selected.length - 1);
@@ -196,6 +196,8 @@
     }
     if(items.length === 1) {
       claire.$search.val(items[0]);
+      search();
+      return true;
     }
 
     var shared = getSharedPrefix(items);
