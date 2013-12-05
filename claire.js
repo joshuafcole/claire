@@ -161,6 +161,13 @@
 
     // Find and highlight newly selected item.
     var $selected = claire.$results.find('li.selected');
+
+    // Store the uncompleted search term in case the user backs out.
+    var val = claire.$search.val();
+    if(!$selected.length) {
+      claire.search = val;
+    }
+
     if(!$selected.length) {
       $selected = claire.$results.find('li')[initial]().addClass('selected');
     } else {
@@ -168,16 +175,17 @@
     }
 
     // Populate search bar with current selection.
-    var val = claire.$search.val();
-    if(claire.selected) {
-      val = val.slice(0, val.length - claire.selected.length);
+    if($selected.length) {
+      val = $selected.attr('title') || '';
+      // If selection is a directory, don't include the last slash -- typing it finalizes the selection.
+      if(val[val.length - 1] === path.sep) {
+        val = val.slice(0, val.length - 1);
+      }
+    } else {
+      val = claire.search;
     }
-    claire.selected = $selected.text() || '';
-    // If selection is a directory, don't include the last slash -- typing it finalizes the selection.
-    if(claire.selected[claire.selected.length - 1] === path.sep) {
-      claire.selected = claire.selected.slice(0, claire.selected.length - 1);
-    }
-    claire.$search.val(val + claire.selected);
+
+    claire.$search.val(val);
   };
   util.addAction('claire.iterate', claire.iterate);
 
