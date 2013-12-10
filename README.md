@@ -7,14 +7,23 @@ this plugin. The backend can be found in the [claire-files repository](http://gi
 
 ## Usage
 1. Clone the claire package into your LT plugins directory.
-    $ cd /path/to/LightTable/ && git clone https://github.com/joshuafcole/claire.git
-2. Download the plugin dependencies via npm. 
-    $ cd plugins/claire && npm install
+
+    ```bash
+        $ cd /path/to/LightTable/ && git clone https://github.com/joshuafcole/claire.git
+    ```
+2. Download the plugin dependencies via npm.
+
+    ```bash
+        $ cd plugins/claire && npm install
+    ```
 3. Load the claire default behaviors in your user.behaviors, or add your own to your user.keymap, found in:
     ```Light Table > View > Commands > User Behaviors```
 
     Add the following to the :app context.
-    ```(:lt.objs.plugins/load-keymap "plugins/claire/claire.keymap")```
+    
+    ```lisp
+    (:lt.objs.plugins/load-keymap "plugins/claire/claire.keymap")
+    ```
 
 You're all set! Restart Light Table. If using the default keybindings, you can activate claire with C-x C-f. Interact by typing. <delete> is bound to smart-delete by default, <tab> is bound to smart-complete, and <enter> opens the current search term.
 
