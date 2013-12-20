@@ -234,7 +234,7 @@
 
   /*\
   |*| Opens the currently selected file.
-  |*| @TODO: Should create it if it does not exist.
+  |*| @TODO: Should prompt user for creation instead of doing it implicitly.
   \*/
   claire.openMatch = function() {
     var filepath = claire.$search.val();
