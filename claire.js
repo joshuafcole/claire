@@ -1,5 +1,7 @@
 (function claireBootstrap(window) {
+  var lt = window.lt;
   var path = require('path');
+  var fs = require('fs');
 
   // Hack to initially load our plugin utilities. After this we can use requireLocal.
   // Anything that gets required this way can use the global require normally.
@@ -10,7 +12,6 @@
   var $ = requireLocal('jquery');
   var claireFiles = requireLocal('claire-files');
   var claire = window.claire || {};
-
   /*************************************************************************\
    * Claire helpers
   \*************************************************************************/
@@ -64,10 +65,10 @@
   /*\
   |*| Dispatches search term to claire-files live as it is typed.
   \*/
-  function search(event) {
+  function search() {
     var val = claire.$search.val();
     claireFiles.find(val, setResults, {pre: '<em>', post: '</em>', short: true});
-  };
+  }
 
   /*\
   |*| Gets the shared prefix of an array of strings.
@@ -83,7 +84,7 @@
     var first = items[0];
     var last = items[items.length - 1];
     var i = 0;
-    while(i < first.length && first.charAt(i) == last.charAt(i)) {
+    while(i < first.length && first.charAt(i) === last.charAt(i)) {
       i++;
     }
     return first.substring(0, i);
@@ -228,7 +229,7 @@
     if(!completed) {
       claire.iterate();
     }
-  }
+  };
   util.addAction('claire.smart-complete', claire.smartComplete);
 
   /*\
@@ -237,7 +238,11 @@
   \*/
   claire.openMatch = function() {
     var filepath = claire.$search.val();
-    util.open(filepath);
+    fs.appendFile(filepath, '', function(err) {
+      //@TODO: Error handling.
+      console.error(err);
+      util.open(filepath);
+    });
   };
   util.addAction('claire.open-match', claire.openMatch);
 
