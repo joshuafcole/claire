@@ -239,8 +239,10 @@
   claire.openMatch = function() {
     var filepath = claire.$search.val();
     fs.appendFile(filepath, '', function(err) {
-      //@TODO: Error handling.
-      console.error(err);
+      if(err) {
+        //@TODO: Error handling.
+        console.error(err);
+      }
       util.open(filepath);
     });
   };
