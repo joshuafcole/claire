@@ -30,3 +30,7 @@ You're all set! Restart Light Table. If using the default keybindings, you can a
 Claire and its constituent parts are free as in liberty to use as you please to the greatest extent possible. The code is
 clean, concise and thoroughly documented with comments. External API should stay consistent, but internal aspects
 may change in the future to improve clarity and reusability.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/joshuafcole/claire/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
