@@ -5,7 +5,8 @@
 
   // Hack to initially load our plugin utilities. After this we can use requireLocal.
   // Anything that gets required this way can use the global require normally.
-  var util = require(path.join(lt.util.load.pwd, 'plugins', 'claire', 'lib', 'util'))(window);
+  var localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'claire');
+  var util = require(path.join(localRoot, 'lib', 'util'))(window);
   var requireLocal = util.requireLocal;
 
   var _ = requireLocal('underscore');
