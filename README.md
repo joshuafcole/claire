@@ -9,7 +9,7 @@ this plugin. The backend can be found in the [claire-files repository](http://gi
 1. Clone the claire package into your LT plugins directory.
 
     ```bash
-        $ cd /path/to/LightTable/ && git clone https://github.com/joshuafcole/claire.git
+        $ cd /path/to/config/LightTable/plugins && git clone https://github.com/joshuafcole/claire.git
     ```
 2. Download the plugin dependencies via npm.
 
