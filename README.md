@@ -14,7 +14,7 @@ this plugin. The backend can be found in the [claire-files repository](http://gi
 2. Download the plugin dependencies via npm.
 
     ```bash
-        $ cd plugins/claire && npm install
+        $ cd claire/ && npm install
     ```
 3. Load the claire default behaviors in your user.behaviors, or add your own to your user.keymap, found in:
     ```Light Table > View > Commands > User Behaviors```
