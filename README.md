@@ -17,7 +17,7 @@ this plugin. The backend can be found in the [claire-files repository](http://gi
         $ cd claire/ && npm install
     ```
 
-You're all set! Restart Light Table. If using the default keybindings, you can activate claire with C-x C-f. Interact by typing. <delete> is bound to smart-delete by default, <tab> is bound to smart-complete, and <enter> opens the current search term.
+You're all set! Restart Light Table. If using the default keybindings, you can activate claire with `C-x C-f`. Interact by typing. `delete` is bound to smart-delete by default, `tab` is bound to smart-complete, and `enter` opens the current search term.
 
 Claire and its constituent parts are free as in liberty to use as you please to the greatest extent possible. The code is
 clean, concise and thoroughly documented with comments. External API should stay consistent, but internal aspects
