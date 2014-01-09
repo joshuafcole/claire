@@ -1,5 +1,0 @@
-{:name "Claire"
- :author "Joshua Cole"
- :source "https://github.com/joshuafcole/claire"
- :desc "LT Native file finder inspired by Emacs"
- :behaviors "claire.behaviors"}
