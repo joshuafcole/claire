@@ -6,13 +6,12 @@
   // Hack to initially load our plugin utilities. After this we can use requireLocal.
   // Anything that gets required this way can use the global require normally.
   var localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'claire');
-  var util = require(path.join(localRoot, 'lib', 'util'))(window);
-  var requireLocal = util.requireLocal;
+  var ltrap = require(path.join(localRoot, 'node_modules', 'ltrap'))(window, localRoot);
 
-  var _ = requireLocal('underscore');
-  var $ = requireLocal('jquery');
-  var claireFiles = requireLocal('claire-files');
-  var claire = window.claire || {};
+  var _ = ltrap.require('underscore');
+  var $ = ltrap.require('jquery');
+  var claireFiles = ltrap.require('claire-files');
+  var claire = lt.plugins.claire || {};
   /*************************************************************************\
    * Claire helpers
   \*************************************************************************/
@@ -26,7 +25,7 @@
     claire.$results = $('<ul>').appendTo($filterList);
 
     $('#claire').remove();
-    util.addItem('#bottombar', claire.$claire);
+    ltrap.addItem('#bottombar', claire.$claire);
   };
 
   /*\
@@ -101,28 +100,28 @@
     claire.$search.val('');
     claire.$results.html('');
   };
-  util.addAction('claire.clear', claire.clear);
+  ltrap.addAction('claire.clear', claire.clear);
 
   /*\
   |*| Displays claire and initalizes it's context.
   \*/
   claire.show = function() {
-    var opened = util.showContainer('#bottombar');
+    var opened = ltrap.showContainer('#bottombar');
     if(opened) {
-      util.enterContext('claire');
+      ltrap.enterContext('claire');
       claire.$search.on('keyup', search);
-      claire.searchRoot = util.getBufferDirectory();
+      claire.searchRoot = ltrap.getActiveDirectory();
       claire.$search.val(claire.searchRoot);
       claire.$search.focus();
       search();
 
     } else {
-      util.exitContext('claire');
+      ltrap.exitContext('claire');
       claire.$search.off('keyup', search);
       claire.clear();
     }
   };
-  util.addAction('claire.show', claire.show);
+  ltrap.addAction('claire.show', claire.show);
 
   /*\
   |*| Deletes a full path component if the char under mark is a path separator, or deletes regularly.
@@ -147,7 +146,7 @@
     claire.$search.val(val);
     search();
   };
-  util.addAction('claire.smart-delete', claire.smartDelete);
+  ltrap.addAction('claire.smart-delete', claire.smartDelete);
 
   /*\
   |*| Iterates through search results.
@@ -185,7 +184,7 @@
 
     claire.$search.val(val);
   };
-  util.addAction('claire.iterate', claire.iterate);
+  ltrap.addAction('claire.iterate', claire.iterate);
 
   /*\
   |*| Calculate longest shared prefix or results and append to $search.
@@ -216,7 +215,7 @@
     }
     return false;
   };
-  util.addAction('claire.complete', claire.complete);
+  ltrap.addAction('claire.complete', claire.complete);
 
   /*\
   |*| completes from the given results if possible or iterates through them if not.
@@ -227,7 +226,7 @@
       claire.iterate();
     }
   };
-  util.addAction('claire.smart-complete', claire.smartComplete);
+  ltrap.addAction('claire.smart-complete', claire.smartComplete);
 
   /*\
   |*| Opens the currently selected file.
@@ -240,14 +239,14 @@
         //@TODO: Error handling.
         console.error(err);
       }
-      util.open(filepath);
+      ltrap.command('open-path', filepath);
     });
   };
-  util.addAction('claire.open-match', claire.openMatch);
+  ltrap.addAction('claire.open-match', claire.openMatch);
 
   // Initializes claire only if it hasn't already been initialized.
-  if(!window.claire) {
+  if(!lt.plugins.claire) {
     claire.init();
-    window.claire = claire;
+    lt.plugins.claire = claire;
   }
 })(this);
