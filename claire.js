@@ -3,6 +3,10 @@
   var path = require('path');
   var fs = require('fs');
 
+  if(!lt.user_plugins) {
+    lt.user_plugins = {};
+  }
+
   // Hack to initially load our plugin utilities. After this we can use requireLocal.
   // Anything that gets required this way can use the global require normally.
   var localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'claire');
@@ -11,22 +15,11 @@
   var _ = ltrap.require('underscore');
   var $ = ltrap.require('jquery');
   var claireFiles = ltrap.require('claire-files');
-  var claire = lt.plugins.claire || {};
+
+  var claire = lt.user_plugins.claire || {};
   /*************************************************************************\
    * Claire helpers
   \*************************************************************************/
-  /*\
-  |*| Creates the HTML template for claire and inserts it into Light Table.
-  \*/
-  claire.init = function() {
-    claire.$claire = $('<div id="claire"><div class="selector">');
-    var $filterList = $('<div class="filter-list">').appendTo(claire.$claire.children('.selector'));
-    claire.$search = $('File: <input class="search" type="text" placeholder="File..." tabindex=0 />').appendTo($filterList);
-    claire.$results = $('<ul>').appendTo($filterList);
-
-    $('#claire').remove();
-    ltrap.addItem('#bottombar', claire.$claire);
-  };
 
   /*\
   |*| Inserts matching results into claire's filter-list.
@@ -89,6 +82,19 @@
     }
     return first.substring(0, i);
   }
+
+  /*\
+  |*| Creates the HTML template for claire and inserts it into Light Table.
+  \*/
+  claire.init = function() {
+    claire.$claire = $('<div id="claire"><div class="selector">');
+    var $filterList = $('<div class="filter-list">').appendTo(claire.$claire.children('.selector'));
+    claire.$search = $('File: <input class="search" type="text" placeholder="File..." tabindex=0 />').appendTo($filterList);
+    claire.$results = $('<ul>').appendTo($filterList);
+
+    $('#claire').remove();
+    $('#bottombar > .content').append(claire.$claire);
+  };
 
   /*************************************************************************\
    * Claire commands
@@ -245,8 +251,8 @@
   ltrap.addAction('claire.open-match', claire.openMatch);
 
   // Initializes claire only if it hasn't already been initialized.
-  if(!lt.plugins.claire) {
+  if(!lt.user_plugins.claire) {
     claire.init();
-    lt.plugins.claire = claire;
+    lt.user_plugins.claire = claire;
   }
 })(this);
