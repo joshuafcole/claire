@@ -1,6 +1,6 @@
 {
   "name": "claire",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Fuzzy file finder inspired by Emacs ido-mode.",
   "main": "claire.js",
   "scripts": {
@@ -24,7 +24,6 @@
   "gitHead": "5854c5b752f936502b96339eb7d4024ba0907c32",
   "dependencies": {
     "claire-files": "~0.0.1",
-    "jquery": "~1.8.3",
     "underscore": "~1.5.2",
     "ltrap": "git+https://github.com/joshuafcole/ltrap.git#0.0.1"
   }

@@ -13,7 +13,6 @@
   var ltrap = require(path.join(localRoot, 'node_modules', 'ltrap'))(window, localRoot);
 
   var _ = ltrap.require('underscore');
-  var $ = ltrap.require('jquery');
   var claireFiles = ltrap.require('claire-files');
 
   var claire = lt.user_plugins.claire || {};
@@ -26,32 +25,39 @@
   \*/
   function setResults(err, matches) {
     if(err) {
-      claire.$results.text(err);
+      claire.results.textContent = err;
       return;
     }
 
-    var selected = claire.$results.find('li.selected').attr('title');
-    claire.$results.html('');
+    var selected = claire.results.querySelector('li.selected');
+    if(selected) {
+      selected = selected.getAttribute('title');
+    } else {
+      selected = '';
+    }
+
+    claire.results.innerHTML = '';
     claire.matches = matches;
     matches.map(function(match, i) {
       var relative = match.dir + match.file;
       var absolute = match.shared + relative;
 
+      // Nameless element means it's not a real result.
       if(!relative) {
         return;
       }
 
-      var $result = $('<li>fileStats.name')
-        .attr('title', absolute)
-        .attr('data-relative', relative)
-        .attr('tabIndex', i)
-        .html(match.rendered);
+      var result = document.createElement('li');
+        result.setAttribute('title', absolute);
+        result.setAttribute('data-relative', relative);
+        result.setAttribute('tabIndex', i);
+        result.innerHTML = match.rendered;
 
       if(absolute === selected) {
-        $result.addClass('selected');
+        result.classList.add('selected');
       }
 
-      claire.$results.append($result);
+      claire.results.appendChild(result);
     });
   }
 
@@ -59,7 +65,7 @@
   |*| Dispatches search term to claire-files live as it is typed.
   \*/
   function search() {
-    var val = claire.$search.val();
+    var val = claire.getValue();
     claireFiles.find(val, setResults, {pre: '<em>', post: '</em>', short: true});
   }
 
@@ -84,16 +90,53 @@
   }
 
   /*\
+  |*| Gets the current search term from claire.
+  \*/
+  claire.getValue = function() {
+    return claire.search.value;
+  };
+
+  /*\
+  |*| Sets the current search term for claire.
+  |*| @NOTE: Does *not* automatically refresh. Call `claire.search()` to update results.
+  \*/
+  claire.setValue = function(value) {
+    claire.search.value = value;
+  };
+
+  /*\
+  |*| Gives focus to the claire input
+  \*/
+  claire.focus = function() {
+    ltrap.enterContext('claire');
+    claire.search.focus();
+  };
+
+  claire.unfocus = function() {
+    ltrap.exitContext('claire');
+  };
+
+  /*\
   |*| Creates the HTML template for claire and inserts it into Light Table.
   \*/
   claire.init = function() {
-    claire.$claire = $('<div id="claire"><div class="selector">');
-    var $filterList = $('<div class="filter-list">').appendTo(claire.$claire.children('.selector'));
-    claire.$search = $('File: <input class="search" type="text" placeholder="File..." tabindex=0 />').appendTo($filterList);
-    claire.$results = $('<ul>').appendTo($filterList);
+    if(claire.claire) {
+      claire.claire.parentNode.removeChild(claire.claire);
+    }
 
-    $('#claire').remove();
-    $('#bottombar > .content').append(claire.$claire);
+    claire.claire = document.createElement('div');
+    claire.claire.id = 'claire';
+    claire.claire.innerHTML =
+      '<div class="filter-list">' +
+      '  File: <input type="text" class="search"' +
+      '    placeholder="File..." tabindex=0 />' +
+      '    <ul></ul>' +
+      '</div>';
+
+    claire.search = claire.claire.querySelector('.search');
+    claire.results = claire.claire.querySelector('ul');
+
+    document.querySelector('#bottombar > .content').appendChild(claire.claire);
   };
 
   /*************************************************************************\
@@ -103,8 +146,8 @@
   |*| Resets claire's state.
   \*/
   claire.clear = function() {
-    claire.$search.val('');
-    claire.$results.html('');
+    claire.setValue('');
+    claire.results.innerHTML = '';
   };
   ltrap.addAction('claire.clear', claire.clear);
 
@@ -114,16 +157,15 @@
   claire.show = function() {
     var opened = ltrap.showContainer('#bottombar');
     if(opened) {
-      ltrap.enterContext('claire');
-      claire.$search.on('keyup', search);
+      claire.focus();
+      claire.search.addEventListener('keyup', search);
       claire.searchRoot = ltrap.getActiveDirectory();
-      claire.$search.val(claire.searchRoot);
-      claire.$search.focus();
+      claire.setValue(claire.searchRoot);
       search();
 
     } else {
-      ltrap.exitContext('claire');
-      claire.$search.off('keyup', search);
+      claire.search.removeEventListener('keyup', search);
+      claire.unfocus();
       claire.clear();
     }
   };
@@ -133,7 +175,7 @@
   |*| Deletes a full path component if the char under mark is a path separator, or deletes regularly.
   \*/
   claire.smartDelete = function() {
-    var val = claire.$search.val();
+    var val = claire.getValue();
     if(val[val.length - 1] === path.sep) {
       // Get separator before this one, if it exists.
       var sep = val.lastIndexOf(path.sep, val.length - 2);
@@ -149,7 +191,7 @@
       val = val.slice(0, val.length - 1);
     }
 
-    claire.$search.val(val);
+    claire.setValue(val);
     search();
   };
   ltrap.addAction('claire.smart-delete', claire.smartDelete);
@@ -158,46 +200,45 @@
   |*| Iterates through search results.
   \*/
   claire.iterate = function(cm, mode) {
-    var initial = 'first';
-    var iter = 'next';
+    var initial = 'firstChild';
+    var iter = 'nextSibling';
     if(mode === 'reverse') {
-      initial = 'last';
-      iter = 'prev';
+      initial = 'lastChild';
+      iter = 'previousSibling';
     }
 
     // Find and highlight newly selected item.
-    var $selected = claire.$results.find('li.selected');
+    var selected = claire.results.querySelector('li.selected');
 
     // Store the uncompleted search term in case the user backs out.
-    var val = claire.$search.val();
-    if(!$selected.length) {
-      claire.search = val;
-    }
-
-    if(!$selected.length) {
-      $selected = claire.$results.find('li')[initial]().addClass('selected');
+    var val = claire.getValue();
+    if(!selected) {
+      claire.lastSearch = val;
+      selected = claire.results[initial];
     } else {
-      $selected = $selected.removeClass('selected')[iter]().addClass('selected');
+      selected.classList.remove('selected');
+      selected = selected[iter];
     }
 
     // Populate search bar with current selection.
-    if($selected.length) {
-      val = $selected.attr('title') || '';
-      claire.lastIterated = true;
+    if(selected) {
+      console.log('iterate', selected);
+      selected.classList.add('selected');
+      val = selected.getAttribute('title') || '';
     } else {
-      val = claire.search;
+      val = claire.lastSearch;
     }
 
-    claire.$search.val(val);
+    claire.setValue(val);
   };
   ltrap.addAction('claire.iterate', claire.iterate);
 
   /*\
-  |*| Calculate longest shared prefix or results and append to $search.
+  |*| Calculate longest shared prefix or results and append to search.
   |*| Note that this is the complete path in the case of a single result.
   \*/
   claire.complete = function() {
-    var val = claireFiles.expandPath(claire.$search.val());
+    var val = claireFiles.expandPath(claire.getValue());
     var items = _.map(claire.matches, function(match) {
       return path.join(match.shared, match.dir, match.file);
     });
@@ -206,7 +247,7 @@
       return;
     }
     if(items.length === 1) {
-      claire.$search.val(items[0]);
+      claire.setValue(items[0]);
       search();
       return true;
     }
@@ -214,7 +255,7 @@
     var shared = getSharedPrefix(items);
     if(shared.length > val.length) {
       if(shared.indexOf(val) !== -1) {
-        claire.$search.val(shared);
+        claire.setValue(shared);
         search();
         return true;
       }
@@ -239,7 +280,7 @@
   |*| @TODO: Should prompt user for creation instead of doing it implicitly.
   \*/
   claire.openMatch = function() {
-    var filepath = claire.$search.val();
+    var filepath = claire.getValue();
     fs.appendFile(filepath, '', function(err) {
       if(err) {
         //@TODO: Error handling.
