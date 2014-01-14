@@ -7,9 +7,13 @@
     lt.user_plugins = {};
   }
 
-  // Hack to initially load our plugin utilities. After this we can use requireLocal.
-  // Anything that gets required this way can use the global require normally.
-  var localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'claire');
+  // When installed through the plugin manager, the plugin directory is created upper case.
+  // When manually cloned, the directory is created lower case..
+  var localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'Claire');
+  if(!fs.existsSync(localRoot)) {
+    localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'claire');
+  }
+
   var ltrap = require(path.join(localRoot, 'node_modules', 'ltrap'))(window, localRoot);
 
   var _ = ltrap.require('underscore');
