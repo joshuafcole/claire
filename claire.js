@@ -153,7 +153,11 @@
     claire.setValue('');
     claire.results.innerHTML = '';
   };
-  ltrap.addAction('claire.clear', claire.clear);
+  ltrap.addCommand({
+    command: 'claire-clear',
+    desc: 'Claire: Clear current search',
+    exec: claire.clear
+  });
 
   /*\
   |*| Displays claire and initalizes it's context.
@@ -173,7 +177,11 @@
       claire.clear();
     }
   };
-  ltrap.addAction('claire.show', claire.show);
+  ltrap.addCommand({
+    command: 'claire-show',
+    desc: 'Claire: Show claire search bar',
+    exec: claire.show
+  });
 
   /*\
   |*| Deletes a full path component if the char under mark is a path separator, or deletes regularly.
@@ -198,7 +206,11 @@
     claire.setValue(val);
     search();
   };
-  ltrap.addAction('claire.smart-delete', claire.smartDelete);
+  ltrap.addCommand({
+    command: 'claire-smart-delete',
+    desc: 'Claire: Delete last path segment or character',
+    exec: claire.smartDelete
+  });
 
   /*\
   |*| Iterates through search results.
@@ -235,7 +247,11 @@
 
     claire.setValue(val);
   };
-  ltrap.addAction('claire.iterate', claire.iterate);
+  ltrap.addCommand({
+    command: 'claire-iterate',
+    desc: 'Claire: Iterate through search results',
+    exec: claire.iterate
+  });
 
   /*\
   |*| Calculate longest shared prefix or results and append to search.
@@ -266,7 +282,11 @@
     }
     return false;
   };
-  ltrap.addAction('claire.complete', claire.complete);
+  ltrap.addCommand({
+    command: 'claire-complete',
+    desc: 'Claire: Complete current search result',
+    exec: claire.complete
+  });
 
   /*\
   |*| completes from the given results if possible or iterates through them if not.
@@ -277,7 +297,11 @@
       claire.iterate();
     }
   };
-  ltrap.addAction('claire.smart-complete', claire.smartComplete);
+  ltrap.addCommand({
+    command: 'claire-smart-complete',
+    desc: 'Claire: Complete or iterate current search result',
+    exec: claire.smartComplete
+  });
 
   /*\
   |*| Opens the currently selected file.
@@ -290,10 +314,14 @@
         //@TODO: Error handling.
         console.error(err);
       }
-      ltrap.command('open-path', filepath);
+      ltrap.execCommand('open-path', filepath);
     });
   };
-  ltrap.addAction('claire.open-match', claire.openMatch);
+  ltrap.addCommand({
+    command: 'claire-open-match',
+    desc: 'Claire: Open current search result',
+    exec: claire.openMatch
+  });
 
   // Initializes claire only if it hasn't already been initialized.
   if(!lt.user_plugins.claire) {

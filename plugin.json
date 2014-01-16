@@ -1,7 +1,7 @@
 {
   "name": "Claire",
   "author": "Joshua Cole",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "source": "https://github.com/joshuafcole/claire",
   "desc": "Fuzzy file finder inspired by Emacs ido-mode.",
   "behaviors": "claire.behaviors"
