@@ -109,18 +109,6 @@
   };
 
   /*\
-  |*| Gives focus to the claire input
-  \*/
-  claire.focus = function() {
-    ltrap.enterContext('claire');
-    claire.search.focus();
-  };
-
-  claire.unfocus = function() {
-    ltrap.exitContext('claire');
-  };
-
-  /*\
   |*| Creates the HTML template for claire and inserts it into Light Table.
   \*/
   claire.init = function() {
@@ -139,6 +127,14 @@
 
     claire.search = claire.claire.querySelector('.search');
     claire.results = claire.claire.querySelector('ul');
+
+    claire.search.addEventListener('focus', function() {
+      ltrap.enterContext('claire');
+    });
+
+    claire.search.addEventListener('focusout', function() {
+      ltrap.exitContext('claire');
+    });
 
     document.querySelector('#bottombar > .content').appendChild(claire.claire);
   };
@@ -161,11 +157,12 @@
 
   /*\
   |*| Displays claire and initalizes it's context.
+  |*| @FIXME: claire not unfocusing properly
   \*/
   claire.show = function() {
     var opened = ltrap.showContainer('#bottombar');
     if(opened) {
-      claire.focus();
+      claire.search.focus();
       claire.search.addEventListener('keyup', search);
       claire.searchRoot = ltrap.getActiveDirectory();
       claire.setValue(claire.searchRoot);
@@ -173,8 +170,8 @@
 
     } else {
       claire.search.removeEventListener('keyup', search);
-      claire.unfocus();
       claire.clear();
+      claire.search.unfocus();
     }
   };
   ltrap.addCommand({
