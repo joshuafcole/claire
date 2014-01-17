@@ -25,6 +25,6 @@
   "dependencies": {
     "claire-files": "~0.0.1",
     "underscore": "~1.5.2",
-    "ltrap": "git+https://github.com/joshuafcole/ltrap.git#0.1.0"
+    "ltrap": "git+https://github.com/joshuafcole/ltrap.git#0.1.1"
   }
 }
