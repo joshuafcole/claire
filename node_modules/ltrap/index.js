@@ -107,7 +107,6 @@ module.exports = function(window, localRoot) {
       command.hidden = false;
     }
     var cmd = toHashMap(command);
-    console.log("CMD", cmd);
     lt.objs.command.command.call(null, cmd);
   }
 
