@@ -148,14 +148,14 @@ module.exports = function(window, localRoot) {
   |*| Gets the currently active tab as an html element.
   \*/
   function getActiveTab() {
-    return document.querySelector('#multi .tabset.active > .list li.active');
+    return lt.objs.tabs.active_tab();
   }
 
   /*\
   |*| Gets the filepath of the currently active tab, super hacky.
   \*/
   function getActiveFile() {
-    return getActiveTab().getAttribute('title');
+    return lt.objs.tabs.__GT_path(getActiveTab());
   }
 
   /*\
