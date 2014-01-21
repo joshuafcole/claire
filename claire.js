@@ -132,7 +132,7 @@
       ltrap.enterContext('claire');
     });
 
-    claire.search.addEventListener('focusout', function() {
+    claire.search.addEventListener('blur', function() {
       ltrap.exitContext('claire');
     });
 
@@ -157,7 +157,6 @@
 
   /*\
   |*| Displays claire and initalizes it's context.
-  |*| @FIXME: claire not unfocusing properly
   \*/
   claire.show = function() {
     var opened = ltrap.showContainer('#bottombar');
@@ -170,8 +169,7 @@
 
     } else {
       claire.search.removeEventListener('keyup', search);
-      claire.clear();
-      claire.search.unfocus();
+      claire.search.blur();
     }
   };
   ltrap.addCommand({
@@ -235,7 +233,6 @@
 
     // Populate search bar with current selection.
     if(selected) {
-      console.log('iterate', selected);
       selected.classList.add('selected');
       val = selected.getAttribute('title') || '';
     } else {
