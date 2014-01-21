@@ -6,7 +6,7 @@
               "enter" [:claire-open-match
                        :claire-clear
                        :claire-show]
-              "up" [(:claire.iterate "reverse")]
-              "down" [:claire.iterate]}
+              "up" [(:claire-iterate "reverse")]
+              "down" [:claire-iterate]}
      }
 }
