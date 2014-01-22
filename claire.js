@@ -7,9 +7,13 @@
     lt.user_plugins = {};
   }
 
-  // Hack to initially load our plugin utilities. After this we can use requireLocal.
-  // Anything that gets required this way can use the global require normally.
-  var localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'claire');
+  // When installed through the plugin manager, the plugin directory is created upper case.
+  // When manually cloned, the directory is created lower case..
+  var localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'Claire');
+  if(!fs.existsSync(localRoot)) {
+    localRoot = path.join(lt.objs.plugins.user_plugins_dir, 'claire');
+  }
+
   var ltrap = require(path.join(localRoot, 'node_modules', 'ltrap'))(window, localRoot);
 
   var _ = ltrap.require('underscore');
@@ -105,18 +109,6 @@
   };
 
   /*\
-  |*| Gives focus to the claire input
-  \*/
-  claire.focus = function() {
-    ltrap.enterContext('claire');
-    claire.search.focus();
-  };
-
-  claire.unfocus = function() {
-    ltrap.exitContext('claire');
-  };
-
-  /*\
   |*| Creates the HTML template for claire and inserts it into Light Table.
   \*/
   claire.init = function() {
@@ -136,6 +128,14 @@
     claire.search = claire.claire.querySelector('.search');
     claire.results = claire.claire.querySelector('ul');
 
+    claire.search.addEventListener('focus', function() {
+      ltrap.enterContext('claire');
+    });
+
+    claire.search.addEventListener('blur', function() {
+      ltrap.exitContext('claire');
+    });
+
     document.querySelector('#bottombar > .content').appendChild(claire.claire);
   };
 
@@ -149,7 +149,11 @@
     claire.setValue('');
     claire.results.innerHTML = '';
   };
-  ltrap.addAction('claire.clear', claire.clear);
+  ltrap.addCommand({
+    command: 'claire-clear',
+    desc: 'Claire: Clear current search',
+    exec: claire.clear
+  });
 
   /*\
   |*| Displays claire and initalizes it's context.
@@ -157,7 +161,7 @@
   claire.show = function() {
     var opened = ltrap.showContainer('#bottombar');
     if(opened) {
-      claire.focus();
+      claire.search.focus();
       claire.search.addEventListener('keyup', search);
       claire.searchRoot = ltrap.getActiveDirectory();
       claire.setValue(claire.searchRoot);
@@ -165,11 +169,14 @@
 
     } else {
       claire.search.removeEventListener('keyup', search);
-      claire.unfocus();
-      claire.clear();
+      claire.search.blur();
     }
   };
-  ltrap.addAction('claire.show', claire.show);
+  ltrap.addCommand({
+    command: 'claire-show',
+    desc: 'Claire: Show claire search bar',
+    exec: claire.show
+  });
 
   /*\
   |*| Deletes a full path component if the char under mark is a path separator, or deletes regularly.
@@ -194,7 +201,11 @@
     claire.setValue(val);
     search();
   };
-  ltrap.addAction('claire.smart-delete', claire.smartDelete);
+  ltrap.addCommand({
+    command: 'claire-smart-delete',
+    desc: 'Claire: Delete last path segment or character',
+    exec: claire.smartDelete
+  });
 
   /*\
   |*| Iterates through search results.
@@ -222,7 +233,6 @@
 
     // Populate search bar with current selection.
     if(selected) {
-      console.log('iterate', selected);
       selected.classList.add('selected');
       val = selected.getAttribute('title') || '';
     } else {
@@ -231,7 +241,11 @@
 
     claire.setValue(val);
   };
-  ltrap.addAction('claire.iterate', claire.iterate);
+  ltrap.addCommand({
+    command: 'claire-iterate',
+    desc: 'Claire: Iterate through search results',
+    exec: claire.iterate
+  });
 
   /*\
   |*| Calculate longest shared prefix or results and append to search.
@@ -262,7 +276,11 @@
     }
     return false;
   };
-  ltrap.addAction('claire.complete', claire.complete);
+  ltrap.addCommand({
+    command: 'claire-complete',
+    desc: 'Claire: Complete current search result',
+    exec: claire.complete
+  });
 
   /*\
   |*| completes from the given results if possible or iterates through them if not.
@@ -273,7 +291,11 @@
       claire.iterate();
     }
   };
-  ltrap.addAction('claire.smart-complete', claire.smartComplete);
+  ltrap.addCommand({
+    command: 'claire-smart-complete',
+    desc: 'Claire: Complete or iterate current search result',
+    exec: claire.smartComplete
+  });
 
   /*\
   |*| Opens the currently selected file.
@@ -286,10 +308,14 @@
         //@TODO: Error handling.
         console.error(err);
       }
-      ltrap.command('open-path', filepath);
+      ltrap.execCommand('open-path', filepath);
     });
   };
-  ltrap.addAction('claire.open-match', claire.openMatch);
+  ltrap.addCommand({
+    command: 'claire-open-match',
+    desc: 'Claire: Open current search result',
+    exec: claire.openMatch
+  });
 
   // Initializes claire only if it hasn't already been initialized.
   if(!lt.user_plugins.claire) {

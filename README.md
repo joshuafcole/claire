@@ -20,10 +20,12 @@ this plugin. The backend can be found in the [claire-files repository](http://gi
 You're all set! Restart Light Table. If using the default keybindings, you can activate claire with `C-x C-f`. Interact by typing. `delete` is bound to smart-delete by default, `tab` is bound to smart-complete, and `enter` opens the current search term.
 
 ##  Changelog
-* 0.0.7 Removes dependency on jQuery
-* 0.0.6 Initial release for plugin manager
-* 0.0.5 Fixes weird behavior when iterating to directories
-* 0.0.4 Initial public release
+* 0.1.2 Fixes focus issues, typo in default keymap, and compatibility with 6.0 binary release of LT.
+* 0.1.1 Properly supports active directory when used with multiple tabsets.
+* 0.0.7 Removes dependency on jQuery.
+* 0.0.6 Initial release for plugin manager.
+* 0.0.5 Fixes weird behavior when iterating to directories.
+* 0.0.4 Initial public release.
 
 ## Legal Stuff
 Claire and its constituent parts are free as in liberty to use as you please to the greatest extent possible. The code is

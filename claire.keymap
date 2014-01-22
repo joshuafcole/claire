@@ -1,11 +1,12 @@
-{:+ {:app {"ctrl-x ctrl-f" [(:editor.codemirror.command "claire.show")]}
+{:+ {:app {"ctrl-x ctrl-f" [:claire-show]}
 
-     :claire {"ctrl-g" [(:editor.codemirror.command "claire.show")]
-              "tab" [(:editor.codemirror.command "claire.smart-complete")]
-              "backspace" [(:editor.codemirror.command "claire.smart-delete")]
-              "enter" [(:editor.codemirror.command "claire.open-match")
-                       (:editor.codemirror.command "claire.show")]
-              "up" [(:editor.codemirror.command "claire.iterate" "reverse")]
-              "down" [(:editor.codemirror.command "claire.iterate")]}
+     :claire {"ctrl-g" [:claire-show]
+              "tab" [:claire-smart-complete]
+              "backspace" [:claire-smart-delete]
+              "enter" [:claire-open-match
+                       :claire-clear
+                       :claire-show]
+              "up" [(:claire-iterate "reverse")]
+              "down" [:claire-iterate]}
      }
 }
