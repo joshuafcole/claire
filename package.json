@@ -23,7 +23,7 @@
   "readmeFilename": "README.md",
   "gitHead": "5854c5b752f936502b96339eb7d4024ba0907c32",
   "dependencies": {
-    "claire-files": "~0.0.1",
+    "claire-files": "~0.0.5",
     "underscore": "~1.5.2",
     "ltrap": "git+https://github.com/joshuafcole/ltrap.git#0.1.2"
   }
