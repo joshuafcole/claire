@@ -70,6 +70,9 @@
   \*/
   function search() {
     var val = claire.getValue();
+    if(!val) {
+      return setResults(null, []);
+    }
     claireFiles.find(val, setResults, {pre: '<em>', post: '</em>', short: true});
   }
 
