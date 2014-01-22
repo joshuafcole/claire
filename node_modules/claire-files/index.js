@@ -83,7 +83,7 @@ function find(term, callback, opts) {
   var matches = [];
 
   var root = getRoot(term, opts);
-  var finder = findit(root);
+  var finder = findit(root, {followSymlinks: true});
   var matchOpts = {pre: opts.pre, post: opts.post};
 
   var searchDepth = util.getPathDepth(getRelativeTerm(term, root));
