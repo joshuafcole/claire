@@ -1,8 +1,8 @@
 {
   "name": "claire",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Fuzzy file finder inspired by Emacs ido-mode.",
-  "main": "claire.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
