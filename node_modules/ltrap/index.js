@@ -155,7 +155,11 @@ module.exports = function(window, localRoot) {
   |*| Gets the filepath of the currently active tab, super hacky.
   \*/
   function getActiveFile() {
-    return lt.objs.tabs.__GT_path(getActiveTab());
+    var active = getActiveTab();
+    if(!active) {
+      return false;
+    }
+    return lt.objs.tabs.__GT_path(active);
   }
 
   /*\
@@ -164,7 +168,8 @@ module.exports = function(window, localRoot) {
   \*/
   function getActiveDirectory() {
     var dir = path.dirname(getActiveFile());
-    if(dir === '.') {
+
+    if(!dir || dir === '.') {
       dir = '~';
     }
     return dir + path.sep;
