@@ -1,11 +1,12 @@
 {:+ {:app {"ctrl-x ctrl-f" [:claire-show]}
 
-     :claire {"ctrl-g" [:claire-show]
+     :claire {"ctrl-g" [:claire-clear
+                        :claire-show]
+              "esc" [:claire-clear
+                     :claire-show]
               "tab" [:claire-smart-complete]
               "backspace" [:claire-smart-delete]
-              "enter" [:claire-open-match
-                       :claire-clear
-                       :claire-show]
+              "enter" [:claire-open-match]
               "up" [(:claire-iterate "reverse")]
               "down" [:claire-iterate]}
      }

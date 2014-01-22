@@ -24,6 +24,10 @@
    * Claire helpers
   \*************************************************************************/
 
+  function isDirectory(filepath) {
+    return filepath[filepath.length - 1] === path.sep;
+  }
+
   /*\
   |*| Inserts matching results into claire's filter-list.
   \*/
@@ -70,6 +74,9 @@
   \*/
   function search() {
     var val = claire.getValue();
+    if(!val) {
+      return setResults(null, []);
+    }
     claireFiles.find(val, setResults, {pre: '<em>', post: '</em>', short: true});
   }
 
@@ -120,9 +127,9 @@
     claire.claire.id = 'claire';
     claire.claire.innerHTML =
       '<div class="filter-list">' +
-      '  File: <input type="text" class="search"' +
+      '  <input type="text" class="search"' +
       '    placeholder="File..." tabindex=0 />' +
-      '    <ul></ul>' +
+      '  <ul></ul>' +
       '</div>';
 
     claire.search = claire.claire.querySelector('.search');
@@ -183,11 +190,11 @@
   \*/
   claire.smartDelete = function() {
     var val = claire.getValue();
-    if(val[val.length - 1] === path.sep) {
+    if(isDirectory(val) && val.length > 1) {
       // Get separator before this one, if it exists.
       var sep = val.lastIndexOf(path.sep, val.length - 2);
       if(sep !== -1) {
-        val = val.slice(0, sep + 1); // Include the separator.
+        val = val.slice(0, sep + 1); // Leave the separator.
       } else {
         val = path.sep;
       }
@@ -303,12 +310,18 @@
   \*/
   claire.openMatch = function() {
     var filepath = claire.getValue();
+    if(isDirectory(filepath)) {
+      return search();
+    }
+
     fs.appendFile(filepath, '', function(err) {
       if(err) {
         //@TODO: Error handling.
         console.error(err);
       }
       ltrap.execCommand('open-path', filepath);
+      claire.clear();
+      claire.show();
     });
   };
   ltrap.addCommand({
