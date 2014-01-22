@@ -120,9 +120,9 @@
     claire.claire.id = 'claire';
     claire.claire.innerHTML =
       '<div class="filter-list">' +
-      '  File: <input type="text" class="search"' +
+      '  <input type="text" class="search"' +
       '    placeholder="File..." tabindex=0 />' +
-      '    <ul></ul>' +
+      '  <ul></ul>' +
       '</div>';
 
     claire.search = claire.claire.querySelector('.search');
@@ -183,7 +183,7 @@
   \*/
   claire.smartDelete = function() {
     var val = claire.getValue();
-    if(val[val.length - 1] === path.sep) {
+    if(val[val.length - 1] === path.sep && val.length > 1) {
       // Get separator before this one, if it exists.
       var sep = val.lastIndexOf(path.sep, val.length - 2);
       if(sep !== -1) {
