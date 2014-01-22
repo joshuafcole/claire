@@ -1,6 +1,6 @@
 {
   "name": "claire",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Fuzzy file finder inspired by Emacs ido-mode.",
   "main": "claire.js",
   "scripts": {
