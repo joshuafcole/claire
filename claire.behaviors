@@ -1,4 +1,4 @@
-{:+ {:app [(:lt.objs.plugins/load-js "index.js")
+{:+ {:app [(:lt.objs.plugins/load-js "./index.js")
            (:lt.objs.plugins/load-css "./css/structure.css")
            (:lt.objs.plugins/load-keymap "claire.keymap")]
 }}
