@@ -19,7 +19,11 @@ this plugin. The backend can be found in the [claire-files repository](http://gi
 
 You're all set! Restart Light Table. If using the default keybindings, you can activate claire with `C-x C-f`. Interact by typing. `delete` is bound to smart-delete by default, `tab` is bound to smart-complete, and `enter` opens the current search term.
 
-##  Changelog
+## Changelog
+
+* 0.1.8 Bug fixes.
+  - #7 - Editor not focused after match opened - @seancorfield
+  - #10 - `:claire-iterate` did not respect direction parameter - @dubiousdavid
 * 0.1.7 Fixes bug when reattaching to bottom bar after console has been opened.
 * 0.1.6 Fixes implicit relative include path and claire being eaten by toggling the console.
 * 0.1.5 Bumps LTrap version to fix claire when no tab / non-file-backed tab is selected.
